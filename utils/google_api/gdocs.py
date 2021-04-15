@@ -33,6 +33,7 @@ def read_strucutural_elements(elements):
             elements = value.get('paragraph').get('elements')
             for elem in elements:
                 text += read_paragraph_element(elem)
+
     return text
 
 
