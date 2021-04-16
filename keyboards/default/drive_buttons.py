@@ -41,8 +41,5 @@ def down_level(site: dict, site_name: str):
     butt = ReplyKeyboardMarkup(resize_keyboard=True,
                                keyboard=[[KeyboardButton(text=x['name']) for x in item] for item in formatted_2d_list])
     service.close()
-    print(down_folder)
+    butt.row('Меню',"Назад")
     return butt, down_folder
-
-
-# print(down_level(site_res()[1], 'SofiaDate'))
