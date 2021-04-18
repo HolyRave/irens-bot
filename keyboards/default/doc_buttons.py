@@ -1,5 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from utils.google_api.gdocs import get_headers, content_by_header
+
+from utils.google_api.gdocs import get_headers
 
 
 def head_buttons(document_id):
@@ -9,6 +10,6 @@ def head_buttons(document_id):
     site_button = ReplyKeyboardMarkup(resize_keyboard=True, row_width=6,
                                       keyboard=[[KeyboardButton(text=x) for x in itm]
                                                 for itm in formatted_2d_list])
-    site_button.row('Меню',"Назад")
+    site_button.row('Меню', "Назад")
 
     return hed, site_button, get_content

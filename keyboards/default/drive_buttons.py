@@ -1,4 +1,5 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+
 from utils.google_api.api_credentials import service
 
 
@@ -39,7 +40,8 @@ def down_level(site: dict, site_name: str):
     down_folder = {item['name']: [item['id'], item['mimeType']] for item in items}
     formatted_2d_list = [items[x:x + 3] for x in range(0, len(items), 3)]
     butt = ReplyKeyboardMarkup(resize_keyboard=True,
-                               keyboard=[[KeyboardButton(text=x['name']) for x in item] for item in formatted_2d_list])
+                               keyboard=[[KeyboardButton(text=x['name']) for x in item]
+                                         for item in formatted_2d_list])
     service.close()
-    butt.row('Меню',"Назад")
+    butt.row('Меню', "Назад")
     return butt, down_folder
