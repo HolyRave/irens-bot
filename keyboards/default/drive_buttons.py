@@ -34,13 +34,17 @@ _, sites_dct = site_res()
 
 
 def down_level(site: dict, site_name: str):
+    if site_name[0] in ['📂', '📋']:
+        site_name = site_name[1::]
     new_result = service.files().list(q=f"'{site[f'{site_name}']}' in parents",
                                       pageSize=10, fields="nextPageToken, files(id,name, parents, mimeType)").execute()
     items = new_result.get('files', [])
     down_folder = {item['name']: [item['id'], item['mimeType']] for item in items}
     formatted_2d_list = [items[x:x + 3] for x in range(0, len(items), 3)]
     butt = ReplyKeyboardMarkup(resize_keyboard=True,
-                               keyboard=[[KeyboardButton(text=x['name']) for x in item]
+                               keyboard=[[KeyboardButton(text='📂'+x['name']
+                                        if 'application/vnd.google-apps.folder' in x['mimeType']
+                                                         else '📋'+x['name']) for x in item]
                                          for item in formatted_2d_list])
     service.close()
     butt.row('Меню', "Назад")

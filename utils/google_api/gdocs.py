@@ -31,7 +31,7 @@ def content_by_header(elements: list, head_id: str):
     text = ''
     for ind, value in enumerate(elements):
         if value.get('paragraph', {}).get('paragraphStyle', {}).get('headingId') == head_id:
-            elements = elements[ind::]
+            elements = elements[ind+1::]
 
     for ind, value in enumerate(elements):
         if value.get('paragraph', {}).get('paragraphStyle', {}).get('headingId') is not None and \
