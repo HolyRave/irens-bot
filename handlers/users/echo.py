@@ -7,8 +7,7 @@ from loader import dp
 # Эхо хендлер, куда летят текстовые сообщения без указанного состояния
 @dp.message_handler(state=None)
 async def bot_echo(message: types.Message):
-    await message.answer(f"Похоже бот перезапустился! "
-                         f"Бот пока в тестовой стадии, позже такой проблемы не будет! "
+    await message.answer(f"Похоже бот перезапустился!"
                          f"Напишите /start")
 
 

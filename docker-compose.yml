@@ -1,15 +1,6 @@
 version: "3.8"
 
 services:
-  db:
-    container_name: onu-tg-bot-database
-    image: rethinkdb
-    environment:
-      - RETHINKDB_USER=${DATABASE_USER}
-      - RETHINKDB_DB=${DATABASE_NAME}
-      - RETHINKDB_PASSWORD=${DATABASE_PASSWORD}
-    ports:
-      - "5430:5432"
   web:
     build: .
     env_file:
@@ -17,5 +8,3 @@ services:
     command: python app.py
     volumes:
       - .:/tg-bot
-    depends_on:
-      - db

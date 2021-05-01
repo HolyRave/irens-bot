@@ -2,7 +2,6 @@ aiogram==2.12.1
 aiohttp==3.7.4.post0
 async-timeout==3.0.1
 attrs==20.3.0
-rethinkdb==2.4.8
 Babel==2.9.0
 cachetools==4.2.1
 certifi==2020.12.5
