@@ -17,7 +17,7 @@ def get_root():
     return root
 
 
-def site_res():
+def site_res(admin=False):
     site_result = service.files().list(q=f'"{get_root()}" in parents',
                                        pageSize=10, fields="files(id,name, parents)").execute()
     sites = site_result.get('files', [])
@@ -27,6 +27,8 @@ def site_res():
                                                 for itm in formatted_2d_list])
     sites_dict = {site['name']: site['id'] for site in sites}
     service.close()
+    if admin:
+        site_button.row('Лог использования', 'Аварийно отключить бота')
     return site_button, sites_dict
 
 

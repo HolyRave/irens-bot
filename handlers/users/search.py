@@ -4,9 +4,29 @@ from aiogram.dispatcher import FSMContext
 from handlers.users.start import bot_start
 from keyboards.default.doc_buttons import head_buttons
 from keyboards.default.drive_buttons import sites_dct, down_level
-from loader import dp
+from loader import dp,bot
 from states.searching import Search
 from utils.google_api.gdocs import content_by_header
+from data.config import ADMINS
+import asyncio
+
+@dp.message_handler(lambda message: message.from_user.id in ADMINS
+                    and message.text in ['Лог использования', 'Аварийно отключить бота'],
+                    state=Search.first_lvl)
+async def adminutils(message: types.Message, state: FSMContext):
+    if message.text == 'Лог использования':
+        with open('data/startlog.txt', 'r', encoding='utf-8') as f:
+            startset = set(line for line in f)
+        startstr = ''
+        for line in startset:
+            startstr += line
+        await message.answer(startstr)
+        await state.finish()
+        await bot_start(message, state)
+    else:
+        await message.answer('Готово! бот выключен!'
+                             'Перезапустить бота можно только попросив девопса заново поднять контейнер')
+        asyncio.get_running_loop().stop()
 
 
 @dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
@@ -17,7 +37,8 @@ async def fstlvl(message: types.Message, state: FSMContext):
         else:
             bback = (await state.get_data())['back2']
             underbt, underdict = down_level(bback, message.text.strip())
-        await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}", reply_markup=underbt)
+        await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}",
+                             reply_markup=underbt)
         await Search.second_lvl.set()
         await state.update_data(files=underdict, platform=message, backfold=message)
         try:
