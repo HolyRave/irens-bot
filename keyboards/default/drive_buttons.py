@@ -29,6 +29,7 @@ def site_res(admin=False):
     service.close()
     if admin:
         site_button.row('Лог использования', 'Аварийно отключить бота')
+        site_button.row('Обновить новые "шорткаты"')
     return site_button, sites_dict
 
 

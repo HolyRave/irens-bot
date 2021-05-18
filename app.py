@@ -1,12 +1,12 @@
 from aiogram import executor
 from loader import dp
 import middlewares, filters, handlers
-from utils.notify_admins import on_startup_notify
+from utils.onstart_shortcuts import on_startup_commands
 
 
-async def on_startup(dispatcher):
+async def on_startup(dp):
     # Уведомляет про запуск
-    await on_startup_notify(dispatcher)
+    await on_startup_commands(dp)
 
 
 if __name__ == '__main__':
