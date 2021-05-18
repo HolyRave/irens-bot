@@ -1,3 +1,3 @@
 from . import misc
 from . import google_api
-from .notify_admins import on_startup_notify
+from .onstart_shortcuts import on_startup_commands

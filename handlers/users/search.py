@@ -4,14 +4,24 @@ from aiogram.dispatcher import FSMContext
 from handlers.users.start import bot_start
 from keyboards.default.doc_buttons import head_buttons
 from keyboards.default.drive_buttons import sites_dct, down_level
-from loader import dp,bot
+from loader import dp
 from states.searching import Search
 from utils.google_api.gdocs import content_by_header
 from data.config import ADMINS
 import asyncio
+from utils.onstart_shortcuts import on_startup_commands
+from utils.jsonshorts import get_params
+
+
+@dp.message_handler(commands=list(get_params().keys()), state='*')
+async def shortcut_command(message:types.Message):
+    data = get_params()
+    for item in data[message.text[1::]]:
+        await message.answer(item)
+
 
 @dp.message_handler(lambda message: message.from_user.id in ADMINS
-                    and message.text in ['Лог использования', 'Аварийно отключить бота'],
+                    and message.text in ['Лог использования', 'Аварийно отключить бота', 'Обновить новые "шорткаты"'],
                     state=Search.first_lvl)
 async def adminutils(message: types.Message, state: FSMContext):
     if message.text == 'Лог использования':
@@ -23,10 +33,16 @@ async def adminutils(message: types.Message, state: FSMContext):
         await message.answer(startstr)
         await state.finish()
         await bot_start(message, state)
-    else:
+    elif message.text == "Аварийно отключить бота":
         await message.answer('Готово! бот выключен!'
                              'Перезапустить бота можно только попросив девопса заново поднять контейнер')
         asyncio.get_running_loop().stop()
+    else:
+        await on_startup_commands(dp)
+        await message.answer("Готово! Обновление скоро зачтется!")
+        await state.finish()
+        await bot_start(message, state)
+
 
 
 @dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
