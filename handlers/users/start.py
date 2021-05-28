@@ -19,7 +19,7 @@ async def bot_start(message: types.Message, state: FSMContext):
         for line in list(startset):
             f.write(line)
 
-    if message.from_user.id in config.ADMINS:
+    if message.from_user.id in config.admins():
         btn, _ = site_res(True)
         await message.answer(f"Привет, {message.from_user.full_name}!", reply_markup=btn)
     else:

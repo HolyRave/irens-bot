@@ -7,62 +7,64 @@ from keyboards.default.drive_buttons import sites_dct, down_level
 from loader import dp
 from states.searching import Search
 from utils.google_api.gdocs import content_by_header
-from data.config import ADMINS
+from data.config import admins
 import asyncio
 from utils.onstart_shortcuts import on_startup_commands
 from utils.jsonshorts import get_params
 
 
-@dp.message_handler(commands=list(get_params().keys()), state='*')
-async def shortcut_command(message:types.Message):
-    data = get_params()
-    for item in data[message.text[1::]]:
-        await message.answer(item)
-
-
-@dp.message_handler(lambda message: message.from_user.id in ADMINS
-                    and message.text in ['Лог использования', 'Аварийно отключить бота', 'Обновить новые "шорткаты"'],
+@dp.message_handler(lambda message: message.text in ['Лог использования', 'Аварийно отключить бота', 'Обновить новые "шорткаты"'],
                     state=Search.first_lvl)
 async def adminutils(message: types.Message, state: FSMContext):
-    if message.text == 'Лог использования':
-        with open('data/startlog.txt', 'r', encoding='utf-8') as f:
-            startset = set(line for line in f)
-        startstr = ''
-        for line in startset:
-            startstr += line
-        await message.answer(startstr)
-        await state.finish()
-        await bot_start(message, state)
-    elif message.text == "Аварийно отключить бота":
-        await message.answer('Готово! бот выключен!'
-                             'Перезапустить бота можно только попросив девопса заново поднять контейнер')
-        asyncio.get_running_loop().stop()
-    else:
-        await on_startup_commands(dp)
-        await message.answer("Готово! Обновление скоро зачтется!")
-        await state.finish()
-        await bot_start(message, state)
-
-
-
-@dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
-async def fstlvl(message: types.Message, state: FSMContext):
-    try:
-        if message.text in sites_dct.keys():
-            underbt, underdict = down_level(sites_dct, message.text)
+    if message.from_user.id in admins():
+        if message.text == 'Лог использования':
+            with open('data/startlog.txt', 'r', encoding='utf-8') as f:
+                startset = set(line for line in f)
+            startstr = ''
+            for line in startset:
+                startstr += line
+            await message.answer(startstr)
+            await state.finish()
+            await bot_start(message, state)
+        elif message.text == "Аварийно отключить бота":
+            await message.answer('Готово! бот выключен!'
+                                 'Перезапустить бота можно только попросив девопса заново поднять контейнер')
+            asyncio.get_running_loop().stop()
         else:
-            bback = (await state.get_data())['back2']
-            underbt, underdict = down_level(bback, message.text.strip())
-        await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}",
-                             reply_markup=underbt)
-        await Search.second_lvl.set()
-        await state.update_data(files=underdict, platform=message, backfold=message)
-        try:
-            await message.delete()
-        except:
-            pass
-    except Exception as e:
+            await on_startup_commands(dp)
+            await message.answer("Готово! Обновление скоро зачтется!")
+            await state.finish()
+            await bot_start(message, state)
+    elif message.text in ['/' + x for x in list(get_params().keys())]:
+                data = get_params()
+                for item in data[message.text[1::]]:
+                    await message.answer(item)
+    else:
         await message.answer('Такого файла или документа пока нет на диске!')
+
+    @dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
+    async def fstlvl(message: types.Message, state: FSMContext):
+        try:
+            if message.text in sites_dct.keys():
+                underbt, underdict = down_level(sites_dct, message.text)
+            else:
+                bback = (await state.get_data())['back2']
+                underbt, underdict = down_level(bback, message.text.strip())
+            await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}",
+                                 reply_markup=underbt)
+            await Search.second_lvl.set()
+            await state.update_data(files=underdict, platform=message, backfold=message)
+            try:
+                await message.delete()
+            except:
+                pass
+        except Exception as e:
+            if message.text in ['/' + x for x in list(get_params().keys())]:
+                data = get_params()
+                for item in data[message.text[1::]]:
+                    await message.answer(item)
+            else:
+                await message.answer('Такого файла или документа пока нет на диске!')
 
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT, state=Search.second_lvl)
@@ -116,7 +118,12 @@ async def scndlvl(message: types.Message, state: FSMContext):
                     except:
                         pass
             except:
-                await message.answer('Такого документа или файла пока нет на диске!')
+                if message.text in ['/' + x for x in list(get_params().keys())]:
+                    data = get_params()
+                    for item in data[message.text[1::]]:
+                        await message.answer(item)
+                else:
+                    await message.answer('Такого файла или документа пока нет на диске!')
 
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT, state=Search.past)
@@ -149,4 +156,9 @@ async def pst(message: types.Message, state: FSMContext):
                 await message.answer(message.text)
                 await message.answer(content_by_header(elem, header[message.text.strip()]))
         except:
-            await message.answer('Такого шаблона пока нет в документе!')
+            if message.text in ['/' + x for x in list(get_params().keys())]:
+                data = get_params()
+                for item in data[message.text[1::]]:
+                    await message.answer(item)
+            else:
+                await message.answer('Такого шаблона пока нет в документе!')
