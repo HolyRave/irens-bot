@@ -5,4 +5,4 @@
 
 **To start container simply type:** `docker-compose up --build -d`
 
-**To restart bot type:** `docker-compose restart -d`
+**To restart bot type:** `docker-compose restart`
