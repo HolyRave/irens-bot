@@ -35,36 +35,30 @@ async def adminutils(message: types.Message, state: FSMContext):
             await message.answer("Готово! Обновление скоро зачтется!")
             await state.finish()
             await bot_start(message, state)
-    elif message.text in ['/' + x for x in list(get_params().keys())]:
-                data = get_params()
-                for item in data[message.text[1::]]:
-                    await message.answer(item)
-    else:
-        await message.answer('Такого файла или документа пока нет на диске!')
 
-    @dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
-    async def fstlvl(message: types.Message, state: FSMContext):
+@dp.message_handler(lambda message: message.text in sites_dct.keys(), state=Search.first_lvl)
+async def fstlvl(message: types.Message, state: FSMContext):
+    try:
+        if message.text in sites_dct.keys():
+            underbt, underdict = down_level(sites_dct, message.text)
+        else:
+            bback = (await state.get_data())['back2']
+            underbt, underdict = down_level(bback, message.text.strip())
+        await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}",
+                             reply_markup=underbt)
+        await Search.second_lvl.set()
+        await state.update_data(files=underdict, platform=message, backfold=message)
         try:
-            if message.text in sites_dct.keys():
-                underbt, underdict = down_level(sites_dct, message.text)
-            else:
-                bback = (await state.get_data())['back2']
-                underbt, underdict = down_level(bback, message.text.strip())
-            await message.answer(f"{message.text[1::] if message.text[0] in ['📂', '📋'] else message.text}",
-                                 reply_markup=underbt)
-            await Search.second_lvl.set()
-            await state.update_data(files=underdict, platform=message, backfold=message)
-            try:
-                await message.delete()
-            except:
-                pass
-        except Exception as e:
-            if message.text in ['/' + x for x in list(get_params().keys())]:
-                data = get_params()
-                for item in data[message.text[1::]]:
-                    await message.answer(item)
-            else:
-                await message.answer('Такого файла или документа пока нет на диске!')
+            await message.delete()
+        except:
+            pass
+    except Exception as e:
+        if message.text in ['/' + x for x in list(get_params().keys())]:
+            data = get_params()
+            for item in data[message.text[1::]]:
+                await message.answer(item)
+        else:
+            await message.answer('Такого файла или документа пока нет на диске!')
 
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT, state=Search.second_lvl)
@@ -155,7 +149,8 @@ async def pst(message: types.Message, state: FSMContext):
                     pass
                 await message.answer(message.text)
                 await message.answer(content_by_header(elem, header[message.text.strip()]))
-        except:
+        except Exception as e:
+            print(e)
             if message.text in ['/' + x for x in list(get_params().keys())]:
                 data = get_params()
                 for item in data[message.text[1::]]:

@@ -34,10 +34,15 @@ def content_by_header(elements: list, head_id: str):
             elements = elements[ind+1::]
 
     for ind, value in enumerate(elements):
+        if value.get('paragraph', {}).get('elements',[{}])[0].get('textRun',{}).get('content','')[0] == '#':
+            elements = elements[ind+1::]
+
+    for ind, value in enumerate(elements):
         if value.get('paragraph', {}).get('paragraphStyle', {}).get('headingId') is not None and \
                 value.get('paragraph', {}).get('paragraphStyle', {}).get('headingId') != head_id and \
                 value.get('paragraph', {}).get('paragraphStyle', {}).get('namedStyleType') == "HEADING_1":
             elements = elements[:ind:]
+
 
     for value in elements:
         elements = value.get('paragraph').get('elements')
