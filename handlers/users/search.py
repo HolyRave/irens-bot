@@ -7,7 +7,7 @@ from keyboards.default.drive_buttons import sites_dct, down_level
 from loader import dp
 from states.searching import Search
 from utils.google_api.gdocs import content_by_header
-from data.config import admins
+from data.config import admins, users
 import asyncio
 from utils.onstart_shortcuts import on_startup_commands
 from utils.jsonshorts import get_params

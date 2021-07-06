@@ -37,5 +37,14 @@ def main():
     return list_of_ids
 
 
+def user_parse():
+    """Uses the Docs API to print out the text of a document."""
+    doc = service.documents().get(documentId='14T6U_Q5wsACuaW4Dm9filZ4dfIIbiEYynC2e-nCzabU').execute()
+    doc_content = doc.get('body').get('content')
+    id_s = read_strucutural_elements(doc_content)
+    list_of_ids = [x.strip() for x in id_s.split(',')]
+    return list_of_ids
+
+
 if __name__ == '__main__':
     main()

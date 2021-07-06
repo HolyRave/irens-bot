@@ -5,3 +5,7 @@ class Search(StatesGroup):
     first_lvl = State()
     second_lvl = State()
     past = State()
+
+
+class Reg(StatesGroup):
+    unreg = State()

@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from utils.google_api.api_credentials import service
 
@@ -52,3 +52,6 @@ def down_level(site: dict, site_name: str):
     service.close()
     butt.row('Меню', "Назад")
     return butt, down_folder
+
+
+void = ReplyKeyboardRemove()
